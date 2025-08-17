@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiggy Instamart - Quick Services</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles to match Swiggy's branding and the provided design */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* A very light gray for a clean, white theme */
+        }
+        .swiggy-red {
+            background-color: #fc8019; /* Swiggy's primary orange color */
+        }
+        .swiggy-light {
+            background-color: #ffffff; /* White background for main content areas */
+            color: #333; /* Dark text for readability on white */
+        }
+        .swiggy-text-orange {
+            color: #fc8019;
+        }
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .service-card {
+            background-color: #ecf7f9;
+            color: #333;
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Subtle shadow for depth */
+        }
+        .service-card:hover {
+            transform: translateY(-5px); /* Lifts the card on hover for an interactive feel */
+        }
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #f0f0f0; /* Light gray background for the icon container */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 1.5rem;
+            color: #fc8019; /* Icon color matches Swiggy's orange */
+        }
+        .rounded-ad {
+            border-radius: 16px; /* Larger border-radius for the ad banner */
+        }
+        .search-bar {
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        .search-input {
+            background: none;
+            border: none;
+            outline: none;
+            color: #333;
+            flex-grow: 1;
+            padding-left: 0.5rem;
+        }
+        .search-input::placeholder {
+            color: #888;
+        }
+        /* Styles for the horizontally scrollable category pills */
+        .scrollable-row {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+        }
+        .scrollable-row::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari, Opera */
+        }
+        .category-pill {
+            display: inline-block;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            margin-right: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .category-pill.active, .category-pill:hover {
+            background-color: #fc8019;
+            color: #fff; /* White text on active/hover state */
+        }
+        /* New styles for the popular service cards */
+        .popular-service-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .popular-service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,5);
+        }
+        .popular-service-img {
+            width: 100%;
+            height: 120px; /* Fixed height for the image */
+            object-fit: cover; /* Ensures the image covers the area without distortion */
+        }
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+        /* Spinner for loading state */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #fc8019;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-4 px-2">
+
+    <!-- Main container for the app UI -->
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden pb-4">
+        <!-- Top Header with user profile -->
+        <div class="swiggy-light p-4 flex items-center rounded-t-3xl border-b border-gray-100">
+            <div class="w-12 h-12 rounded-full overflow-hidden mr-3">
+                <img src="https://www.vecteezy.com/png/19879186-user-icon-on-transparent-background" alt="User Profile" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/48x48/CCCCCC/FFFFFF?text=U';">
+            </div>
+            <div>
+                <p class="text-gray-600 text-sm">HELLO 👋</p>
+                <p class="font-semibold text-lg">User</p>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="swiggy-light p-4 pt-0">
+            <h1 class="text-3xl font-bold mt-4">Let's find the <span class="swiggy-text-orange">Perfect</span><br>Service Expert</h1>
+            <div class="flex items-center text-gray-500 text-sm mt-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">Jabalpur, Madhya Pradesh</span>
+            </div>
+
+            <!-- Search and Plan Section -->
+            <div class="flex items-center mt-6 gap-2">
+                <div class="search-bar shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                    <input type="text" placeholder="Search for a service..." class="search-input">
+                </div>
+                <button id="planTaskBtn" class="p-3 bg-gray-200 rounded-xl shadow-sm hover:bg-gray-300 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-600"><path d="m9.06 2.25 1.25-1.25a.5.5 0 0 1 .71 0l1.25 1.25a.5.5 0 0 1 0 .71L11.25 4a.5.5 0 0 1-.71 0L9.06 2.96a.5.5 0 0 1 0-.71z"/><path d="M16 4.01V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.01"/><path d="M22 12a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1v-2zM16 12.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zM19 12.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1z"/></svg>
+                </button>
+            </div>
+
+            <!-- Promotion/Ad Banner -->
+            <div class="relative w-full h-40 mt-6 rounded-ad overflow-hidden bg-gray-200">
+                <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=1770&auto=format&fit=crop" alt="Promotional Offer" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x160/FCD34D/000?text=Special+Offer';">
+                <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent opacity-75"></div>
+                <div class="absolute top-4 left-4 text-white">
+                    <p class="text-2xl font-bold">Get 25% Off</p>
+                    <p class="text-sm mt-1">On first cleaning Service</p>
+                    <button class="mt-4 px-6 py-2 swiggy-red text-white font-semibold rounded-lg shadow-md hover:opacity-90">Book now</button>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="section-header text-gray-800">Services</h2>
+                    <a href="#" class="text-sm swiggy-text-orange font-medium hover:underline">See all</a>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="service-card"><div class="service-icon">⚡</div><p class="text-sm font-medium">Electrician</p></div>
+                    <div class="service-card"><div class="service-icon">🐾</div><p class="text-sm font-medium">Pet Grooming</p></div>
+                    <div class="service-card"><div class="service-icon">🧹</div><p class="text-sm font-medium">Quick Cleaning</p></div>
+                    <div class="service-card"><div class="service-icon">🚗</div><p class="text-sm font-medium">Car Wash</p></div>
+                    <div class="service-card"><div class="service-icon">🏠</div><p class="text-sm font-medium">Home Cleaning</p></div>
+                    <div class="service-card"><div class="service-icon">🔧</div><p class="text-sm font-medium">Appliance Repair</p></div>
+                    <div class="service-card"><div class="service-icon">👶</div><p class="text-sm font-medium">Child Care</p></div>
+                    <div class="service-card"><div class="service-icon">🖨️</div><p class="text-sm font-medium">InstaPrint</p></div>
+                    <div class="service-card"><div class="service-icon">💊</div><p class="text-sm font-medium">MediExpress</p></div>
+                </div>
+            </div>
+
+            <!-- Most Popular Services Section -->
+            <div class="mt-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="section-header text-gray-800">Most Popular Services</h2>
+                    <a href="#" class="text-sm swiggy-text-orange font-medium hover:underline">See all</a>
+                </div>
+                <div class="scrollable-row pb-4">
+                    <span class="category-pill active">All</span>
+                    <span class="category-pill">Trending</span>
+                    <span class="category-pill">Monsoon Offer</span>
+                    <span class="category-pill">New Arrivals</span>
+                    <span class="category-pill">Top Rated</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="popular-service-card"><img src="https://images.unsplash.com/photo-1603712725038-92c200f7265d?q=80&w=1886&auto=format&fit=crop" alt="House Cleaning" class="popular-service-img" onerror="this.onerror=null;this.src='https://placehold.co/180x120/F97316/FFFFFF?text=Cleaning';"><div class="p-3 text-center"><p class="font-semibold text-gray-800 text-sm">House Cleaning</p></div></div>
+                    <div class="popular-service-card"><img src="https://images.unsplash.com/photo-1622227934262-6f01901396a5?q=80&w=1770&auto=format&fit=crop" alt="Appliance Repair Service" class="popular-service-img" onerror="this.onerror=null;this.src='https://placehold.co/180x120/F97316/FFFFFF?text=Repair';"><div class="p-3 text-center"><p class="font-semibold text-gray-800 text-sm">Appliance Repair</p></div></div>
+                    <div class="popular-service-card"><img src="https://images.unsplash.com/photo-1607281912855-4c8a8616c8b1?q=80&w=1887&auto=format&fit=crop" alt="Car/Bike Wash" class="popular-service-img" onerror="this.onerror=null;this.src='https://placehold.co/180x120/F97316/FFFFFF?text=Car+Wash';"><div class="p-3 text-center"><p class="font-semibold text-gray-800 text-sm">Car/Bike Wash</p></div></div>
+                    <div class="popular-service-card"><img src="https://images.unsplash.com/photo-1604356675543-96c883d6a2a3?q=80&w=1770&auto=format&fit=crop" alt="InstaPrint Service" class="popular-service-img" onerror="this.onerror=null;this.src='https://placehold.co/180x120/F97316/FFFFFF?text=Printing';"><div class="p-3 text-center"><p class="font-semibold text-gray-800 text-sm">InstaPrint</p></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gemini AI Planner Modal -->
+    <div id="plannerModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold swiggy-text-orange">✨ Plan My Task</h2>
+                <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <p class="text-gray-600 mb-4">Describe what you need to get done, and we'll suggest the right services for you.</p>
+            <textarea id="taskInput" class="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-400 focus:border-transparent transition" placeholder="e.g., 'I'm moving to a new apartment and need help with packing, moving, and cleaning my old place.'"></textarea>
+            <button id="generatePlanBtn" class="w-full mt-4 py-3 swiggy-red text-white font-semibold rounded-lg shadow-md hover:opacity-90 transition flex items-center justify-center">
+                Generate Plan
+            </button>
+            <div id="planResult" class="mt-6"></div>
+        </div>
+    </div>
+
+    <script>
+        // --- Modal Handling ---
+        const planTaskBtn = document.getElementById('planTaskBtn');
+        const plannerModal = document.getElementById('plannerModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const taskInput = document.getElementById('taskInput');
+        const generatePlanBtn = document.getElementById('generatePlanBtn');
+        const planResult = document.getElementById('planResult');
+
+        planTaskBtn.addEventListener('click', () => {
+            plannerModal.classList.add('active');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            plannerModal.classList.remove('active');
+        });
+
+        plannerModal.addEventListener('click', (e) => {
+            if (e.target === plannerModal) {
+                plannerModal.classList.remove('active');
+            }
+        });
+
+        // --- Gemini API Call ---
+        generatePlanBtn.addEventListener('click', async () => {
+            const userPrompt = taskInput.value;
+            if (!userPrompt) {
+                planResult.innerHTML = `<p class="text-red-500">Please describe your task first.</p>`;
+                return;
+            }
+
+            // Show loading state
+            generatePlanBtn.disabled = true;
+            generatePlanBtn.innerHTML = '<div class="spinner"></div>';
+            planResult.innerHTML = '';
+
+            try {
+                // Construct the prompt for the Gemini API
+                const fullPrompt = `You are a helpful assistant for Swiggy Instamart's home services. A user needs help planning a task. Based on their description, suggest a list of relevant services they might need to book. The available services are: Electrician, Pet Grooming, Quick Cleaning, Car Wash, Home Cleaning, Appliance Repair, Child Care, InstaPrint, MediExpress, Plumber, Painter, Packer and Mover, Event Planner, Catering.
+
+                User's task: "${userPrompt}"
+
+                Respond ONLY with a JSON array of objects. Each object should have two keys: "service" and "reason". The "service" should be one of the available services, and the "reason" should be a brief explanation of why that service is needed for the task.`;
+                
+                let chatHistory = [{ role: "user", parts: [{ text: fullPrompt }] }];
+                const payload = { 
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "service": { "type": "STRING" },
+                                    "reason": { "type": "STRING" }
+                                },
+                                required: ["service", "reason"]
+                            }
+                        }
+                    }
+                };
+                
+                const apiKey = ""; // API key is handled by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    
+                    const jsonText = result.candidates[0].content.parts[0].text;
+                    const services = JSON.parse(jsonText);
+                    displayPlan(services);
+                } else {
+                    throw new Error("No content found in API response.");
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                planResult.innerHTML = `<p class="text-red-500">Sorry, we couldn't generate a plan right now. Please try again later.</p>`;
+            } finally {
+                // Restore button state
+                generatePlanBtn.disabled = false;
+                generatePlanBtn.innerHTML = 'Generate Plan';
+            }
+        });
+
+        function displayPlan(services) {
+            if (!services || services.length === 0) {
+                planResult.innerHTML = `<p class="text-gray-600">No specific services found for your request. Try rephrasing your task.</p>`;
+                return;
+            }
+
+            let html = '<h3 class="font-bold text-lg mb-3 text-gray-800">Here\'s your suggested plan:</h3><div class="space-y-3">';
+            services.forEach(item => {
+                html += `
+                    <div class="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                        <p class="font-semibold text-orange-800">${item.service}</p>
+                        <p class="text-sm text-gray-600">${item.reason}</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            planResult.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

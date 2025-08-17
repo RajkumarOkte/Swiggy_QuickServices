@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swiggy Quick Services</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* Light background for the overall page */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for scrolling content */
+            min-height: 100vh;
+        }
+        .mobile-container {
+            width: 100%;
+            max-width: 420px; /* Typical mobile width */
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .swiggy-orange {
+            color: #fc8019;
+        }
+        .swiggy-bg-orange {
+            background-color: #fc8019;
+        }
+        .swiggy-add-btn {
+            background-color: #e6f6f1; /* Light green for add button */
+            color: #00875e; /* Dark green text */
+            border: 1px solid #00875e;
+            font-weight: 600;
+            border-radius: 8px; /* Slightly rounded */
+            padding: 0.25rem 0.75rem;
+            min-width: 60px; /* Ensure consistent button size */
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+        }
+        .swiggy-add-btn:hover {
+            background-color: #d8f0ec;
+        }
+        .category-sidebar {
+            width: 90px; /* Fixed width for the left sidebar */
+            background-color: #fcfcfc; /* Very light background for sidebar */
+            border-right: 1px solid #eee;
+            flex-shrink: 0; /* Prevent it from shrinking */
+        }
+        .category-item-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.75rem 0;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .category-item-link:hover {
+            background-color: #f0f0f0;
+        }
+        .category-item-link.active {
+            background-color: #ffeae1; /* Light orange background for active */
+            position: relative;
+        }
+        .category-item-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px; /* Orange bar */
+            background-color: #fc8019;
+            border-radius: 0 4px 4px 0;
+        }
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #fcfcfc; /* Match sidebar bg */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.25rem;
+            font-size: 1.5rem;
+            color: #7a7a7a; /* Default icon color */
+        }
+        .category-item-link.active .category-icon {
+            background-color: #fef1e8; /* Lighter orange background for active icon */
+            color: #fc8019; /* Active icon color */
+        }
+
+        .service-card-item {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            width: 100%; /* For full width in one column or two in a grid */
+        }
+        .service-card-img {
+            width: 100%;
+            height: 120px; /* Consistent height for images */
+            object-fit: cover;
+            border-radius: 8px; /* Rounded corners for image within card */
+        }
+        .item-price {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+        }
+        .item-old-price {
+            font-size: 0.8rem;
+            color: #999;
+            text-decoration: line-through;
+            margin-left: 0.25rem;
+        }
+        .offer-tag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #ff3d67; /* Red color for discount tag */
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-bottom-right-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="mobile-container">
+        <!-- Top Header -->
+        <header class="p-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
+            <div class="flex items-center">
+                <button onclick="history.back()" class="text-gray-600 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
+                <div class="flex flex-col">
+                    <h1 class="text-lg font-semibold">Services & Repairs</h1>
+                    <div class="flex items-center text-gray-500 text-sm">
+                        <span class="mr-1">All Categories</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <button class="text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Content Area: Sidebar + Service List -->
+        <div class="flex flex-1">
+            <!-- Left Sidebar Categories -->
+            <aside class="category-sidebar">
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">⭐</div>
+                    <span>Best Selling</span>
+                </a>
+                <a href="#" class="category-item-link active">
+                    <div class="category-icon">⚡</div>
+                    <span>Electrician</span>
+                </a>
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">🐾</div>
+                    <span>Pet Grooming</span>
+                </a>
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">🧹</div>
+                    <span>Quick Cleaning</span>
+                </a>
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">🚗</div>
+                    <span>Car Wash</span>
+                </a>
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">🏠</div>
+                    <span>Home Cleaning</span>
+                </a>
+                 <a href="#" class="category-item-link">
+                    <div class="category-icon">🔧</div>
+                    <span>Appliance Repair</span>
+                </a>
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">🖨️</div>
+                    <span>InstaPrint</span>
+                </a>
+                <a href="#" class="category-item-link">
+                    <div class="category-icon">💊</div>
+                    <span>MediExpress</span>
+                </a>
+            </aside>
+
+            <!-- Service Listings -->
+            <main class="flex-1 p-3 bg-gray-50">
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Service Card 1: Fan Repair -->
+                    <div class="service-card-item relative">
+                        <img src="https://placehold.co/200x120/e2e8f0/333?text=Fan+Repair" alt="Fan Repair" class="service-card-img">
+                        <div class="offer-tag">15% OFF</div>
+                        <div class="p-2">
+                            <h3 class="font-semibold text-sm line-clamp-2">Fan Not Working / Repair</h3>
+                            <p class="text-gray-500 text-xs mt-1">Quick fix for non-working ceiling fans.</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    <span class="item-price">₹150</span>
+                                    <span class="item-old-price">₹180</span>
+                                </div>
+                                <button class="swiggy-add-btn">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 2: Switch Board Issues -->
+                    <div class="service-card-item relative">
+                        <img src="https://placehold.co/200x120/fef9c3/333?text=Switch+Repair" alt="Switch Repair" class="service-card-img">
+                        <div class="p-2">
+                            <h3 class="font-semibold text-sm line-clamp-2">Switch Board Issues / Repair</h3>
+                            <p class="text-gray-500 text-xs mt-1">Repair or replacement of faulty switches.</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    <span class="item-price">₹200</span>
+                                </div>
+                                <button class="swiggy-add-btn">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 3: Power Outage -->
+                    <div class="service-card-item relative">
+                        <img src="https://placehold.co/200x120/c7d2fe/333?text=Power+Outage" alt="Power Outage" class="service-card-img">
+                        <div class="p-2">
+                            <h3 class="font-semibold text-sm line-clamp-2">Power Outage - Emergency Call</h3>
+                            <p class="text-gray-500 text-xs mt-1">Emergency visit for sudden power cuts.</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    <span class="item-price">₹300</span>
+                                </div>
+                                <button class="swiggy-add-btn">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                     <!-- Service Card 4: AC Repair -->
+                    <div class="service-card-item relative">
+                        <img src="https://placehold.co/200x120/b3e0ff/333?text=AC+Repair" alt="AC Repair" class="service-card-img">
+                        <div class="p-2">
+                            <h3 class="font-semibold text-sm line-clamp-2">AC Repair & Servicing</h3>
+                            <p class="text-gray-500 text-xs mt-1">Troubleshooting and repair for AC units.</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    <span class="item-price">₹450</span>
+                                </div>
+                                <button class="swiggy-add-btn">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Card 5: Geyser Installation -->
+                    <div class="service-card-item relative">
+                        <img src="https://placehold.co/200x120/f0f9ff/333?text=Geyser+Install" alt="Geyser Installation" class="service-card-img">
+                        <div class="p-2">
+                            <h3 class="font-semibold text-sm line-clamp-2">Geyser Installation/Repair</h3>
+                            <p class="text-gray-500 text-xs mt-1">Installation and repair of water heaters.</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div>
+                                    <span class="item-price">₹550</span>
+                                </div>
+                                <button class="swiggy-add-btn">ADD</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+</body>
+</html>

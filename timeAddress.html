@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Time & Address Selection</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .mobile-container {
+            width: 100%;
+            max-width: 420px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            border-radius: 24px; /* Slightly more rounded container */
+        }
+        .swiggy-orange {
+            color: #fc8019;
+        }
+        .swiggy-bg-orange {
+            background-color: #fc8019;
+        }
+        .swiggy-button {
+            background-color: #fc8019;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.85rem 1.5rem; /* Slightly larger button */
+            width: 100%;
+            text-align: center;
+            transition: background-color 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(252, 128, 25, 0.3); /* Subtle shadow for button */
+        }
+        .swiggy-button:hover:not(:disabled) {
+            background-color: #e06d00;
+        }
+        .swiggy-button:disabled {
+            background-color: #fbd3a2;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .time-slot-button {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 1rem; /* Increased padding */
+            border-radius: 12px; /* More rounded */
+            text-align: left;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e0e0e0;
+            display: flex; /* Flexbox for internal layout */
+            align-items: center;
+            justify-content: space-between; /* Space out content */
+        }
+        .time-slot-button.selected {
+            background-color: #ffeae1;
+            border-color: #fc8019;
+            color: #fc8019;
+            box-shadow: 0 2px 8px rgba(252, 128, 25, 0.1); /* Subtle shadow on selection */
+        }
+        .time-slot-button-icon {
+            font-size: 1.5rem; /* Larger icons */
+            margin-right: 0.75rem;
+            color: #6b7280; /* Default icon color */
+        }
+        .time-slot-button.selected .time-slot-button-icon {
+            color: #fc8019; /* Orange when selected */
+        }
+        .time-slot-price {
+            font-size: 1.2rem; /* Larger price */
+            font-weight: 700;
+        }
+        .address-card {
+            background-color: #fcfcfc;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px; /* More rounded */
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative; /* For checkmark positioning */
+            display: flex;
+            align-items: flex-start;
+        }
+        .address-card.selected {
+            border-color: #fc8019;
+            background-color: #ffeae1;
+            box-shadow: 0 0 0 2px #fc8019;
+        }
+        .address-icon {
+            font-size: 1.5rem; /* Larger icons */
+            margin-right: 0.75rem;
+            color: #6b7280; /* Default icon color */
+        }
+        .address-card.selected .address-icon {
+            color: #fc8019; /* Orange when selected */
+        }
+        .selected-checkmark {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: #00875e; /* Green checkmark */
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .address-card.selected .selected-checkmark {
+            opacity: 1;
+        }
+        .fire-emoji {
+            font-size: 1.25rem;
+        }
+        .add-new-address-card {
+            background-color: #f0f0f0; /* Lighter background for add new */
+            border-style: dashed; /* Dashed border */
+            color: #fc8019;
+            font-weight: 600;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            display: flex;
+        }
+        .add-new-address-card:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="mobile-container">
+        <!-- Top Header -->
+        <header class="p-4 flex items-center justify-between border-b border-gray-100 sticky top-0 bg-white z-10">
+            <div class="flex items-center">
+                <button onclick="history.back()" class="text-gray-600 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
+                <div class="flex flex-col">
+                    <h1 class="text-lg font-semibold">Quick Time & Address Selection</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 bg-gray-50 flex flex-col justify-between">
+            <div class="space-y-6">
+                <!-- When do you need service? -->
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">When do you need service?</h3>
+
+                    <div class="space-y-3">
+                        <button id="slotNow" class="time-slot-button w-full" data-slot="now">
+                            <span class="flex items-center">
+                                <span class="time-slot-button-icon">⚡</span> Now (Next 30 mins)
+                            </span>
+                            <span class="font-bold time-slot-price swiggy-orange">₹500</span>
+                        </button>
+
+                        <button id="slotToday" class="time-slot-button w-full" data-slot="today">
+                            <span class="flex items-center">
+                                <span class="time-slot-button-icon">🗓️</span> Today
+                            </span>
+                            <span class="text-sm text-gray-600">Available slots: 3:00 PM, 4:30 PM, 6:00 PM</span>
+                        </button>
+
+                        <button id="slotTomorrow" class="time-slot-button w-full" data-slot="tomorrow">
+                            <span class="flex items-center">
+                                <span class="time-slot-button-icon">➡️</span> Tomorrow
+                            </span>
+                            <span class="text-sm text-gray-600">Multiple slots available</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Address Selection -->
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Select Address</h3>
+                    <div class="space-y-3">
+                        <div id="addressHome" class="address-card selected" data-address="home">
+                            <span class="address-icon">🏠</span>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-800">Home</h4>
+                                <p class="text-sm text-gray-600 mt-1">123, Main Street, Swiggy Nagar, Jabalpur - 482001</p>
+                            </div>
+                            <span class="selected-checkmark">✅</span>
+                        </div>
+                        <!-- The 'Work' address card has been removed from here -->
+                        
+                        <!-- Add New Address Option -->
+                        <div class="address-card add-new-address-card" data-address="add-new">
+                             <span class="address-icon mr-2">➕</span>
+                            Add New Address
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Availability Indicator -->
+                <div class="bg-white rounded-lg p-4 shadow-sm text-center">
+                    <p class="text-lg font-semibold text-gray-800">
+                        🎉 <span class="swiggy-orange">3 electricians available</span> near you!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Continue Button (Sticky Footer) -->
+            <div class="sticky bottom-0 bg-white p-4 border-t border-gray-100 mt-6">
+                <button id="continueButton" class="swiggy-button" disabled>
+                    Continue
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const timeSlotButtons = document.querySelectorAll('.time-slot-button');
+        const addressCards = document.querySelectorAll('.address-card');
+        const continueButton = document.getElementById('continueButton');
+
+        let selectedTime = null;
+        let selectedAddress = null;
+
+        // Function to update button state
+        function updateContinueButtonState() {
+            if (selectedTime && selectedAddress) {
+                continueButton.disabled = false;
+            } else {
+                continueButton.disabled = true;
+            }
+        }
+
+        // Time slot selection logic
+        timeSlotButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove 'selected' class from all other time buttons
+                timeSlotButtons.forEach(btn => btn.classList.remove('selected'));
+                // Add 'selected' class to the clicked button
+                button.classList.add('selected');
+                selectedTime = button.dataset.slot;
+                updateContinueButtonState();
+            });
+        });
+
+        // Address selection logic
+        addressCards.forEach(card => {
+            card.addEventListener('click', () => {
+                // Only deselect if it's not the "Add New Address" card
+                if (card.dataset.address && card.dataset.address !== 'add-new') {
+                    addressCards.forEach(c => {
+                        if (c.dataset.address && c.dataset.address !== 'add-new') { // Only affect address cards, not 'add new'
+                            c.classList.remove('selected');
+                        }
+                    });
+                    card.classList.add('selected');
+                    selectedAddress = card.dataset.address;
+                    updateContinueButtonState();
+                } else if (card.dataset.address === 'add-new') {
+                    // Handle "Add New Address" click (e.g., navigate to a new page or show a modal)
+                    console.log("Add New Address clicked!");
+                    // You might want to prevent other address cards from being deselected here
+                    // or clear previous selection if "Add New Address" is considered a new flow.
+                    // For now, it's explicitly set not to enable the continue button
+                    selectedAddress = null;
+                    updateContinueButtonState();
+                }
+            });
+        });
+
+        // Initial check on page load (if any default selection is present)
+        // Set 'Home' as default selected address
+        document.getElementById('addressHome').classList.add('selected');
+        selectedAddress = 'home';
+        updateContinueButtonState();
+    </script>
+</body>
+</html>
